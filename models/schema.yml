@@ -1,0 +1,16 @@
+version: 2
+
+models:
+  - name: stg_orders
+    description: "Cleaned TPCH ORDERS"
+    columns:
+      - name: order_id
+        tests: [not_null, unique]
+      - name: order_date
+        tests: [not_null]
+
+  - name: orders_summary
+    description: "Customer totals for orders and revenue"
+    columns:
+      - name: customer_id
+        tests: [not_null]
