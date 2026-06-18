@@ -1,0 +1,16 @@
+# Repro for Zendesk ticket #124743 — env var version ranges in packages.yml
+#
+# The package version is supplied via an environment variable so we can swap
+# the value in dbt Cloud without changing this file.
+#
+#   Broken (list literal, what the customer tried):
+#       DBT_CODEGEN_VERSION = ['>=0.9.0', '<1.0.0']
+#       -> dbt interpolates the literal string and fails semver parsing:
+#          "... is not a valid semantic version."
+#
+#   Suggested fix (single comma-separated specifier string):
+#       DBT_CODEGEN_VERSION = >=0.9.0,<1.0.0
+#       -> dbt splits on the comma into two specifiers and resolves correctly.
+packages:
+  - package: dbt-labs/codegen
+    version: "{{ env_var('DBT_CODEGEN_VERSION') }}"
