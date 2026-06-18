@@ -1,0 +1,14 @@
+# Repro + working fix for Zendesk ticket #124743
+#
+# A SINGLE env var cannot hold a version RANGE: env_var() returns one string and
+# dbt parses it as a single semantic-version specifier. No format is split:
+#   ['>=0.9.0', '<1.0.0']  -> "is not a valid semantic version"
+#   >=0.9.0,<1.0.0         -> "is not a valid semantic version"
+#
+# To parameterize a range, use a YAML list and feed each BOUND from its own env var.
+# Verified with dbt-core 1.11.2: resolves codegen to the latest 0.x below 1.0.0.
+packages:
+  - package: dbt-labs/codegen
+    version:
+      - "{{ env_var('DBT_CODEGEN_MIN') }}"   # e.g. >=0.9.0
+      - "{{ env_var('DBT_CODEGEN_MAX') }}"   # e.g. <1.0.0
